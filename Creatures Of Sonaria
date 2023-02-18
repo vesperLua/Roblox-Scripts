@@ -1,0 +1,42 @@
+-- heart autofarm
+
+getgenv().DroppedHearts = true
+
+task.spawn(function()
+	while getgenv().DroppedHearts == true do
+		task.wait(0.5)
+		for i,v in pairs(workspace.DroppedHearts:GetDescendants()) do
+			if v:IsA("TouchTransmitter") then
+				firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, v.Parent, 0)
+				firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, v.Parent, 1)
+			end
+		end
+	end
+end)
+
+local function Teleport(A, B)
+	local Deku
+	for i, v in pairs(A) do
+		if v.Name == "MotionTracker" then
+			Deku = v
+		end
+	end
+	for i, v in pairs(debug.getupvalues(require(Deku))) do
+		if type(v) == "function" then
+			if getinfo(v).name == "TeleportTo" then
+				setupvalue(v, 3, B)
+			end
+		end
+	end
+	return A, B, nil, nil
+end
+
+Models = getloadedmodules()
+
+while task.wait() do
+	for i,v in pairs(game:GetService("Workspace").DroppedHearts:GetChildren()) do
+		if v:IsA("BasePart") then 
+			Teleport(Models,CFrame.new(v.Position - Vector3.new(0,0,0))) wait(0.5)
+		end
+	end
+end
