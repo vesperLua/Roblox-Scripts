@@ -1,0 +1,161 @@
+--made by vesper#0655
+local GetEnemys=function()
+    local players={}
+    local characters={}
+    local enemyteam
+    for _,v in pairs(game.Players:GetChildren())do
+        if v.Team~=game.Players.LocalPlayer.Team then
+            enemyteam=tostring(v.TeamColor)
+            players[#players+1]=v
+        end
+    end
+    if not enemyteam then
+        enemyteam="Bright orange"
+        if game.Players.LocalPlayer.Team.Name=="Ghosts"then
+            enemyteam="Bright blue"
+        end
+    end
+    for _,v in pairs(game.Workspace.Players[enemyteam]:GetChildren())do
+        characters[#characters+1]=v
+    end
+    return{characters,players}
+end
+local summondecock=function(x)
+    local shaft=Instance.new("Part")
+    shaft.Name="McShafty"
+    shaft.Shape=Enum.PartType.Cylinder
+    shaft.CanCollide=false
+    shaft.Parent=x
+    shaft.Size=Vector3.new(2,.625,.625)
+    shaft.Material="SmoothPlastic"
+    shaft.Color=Color3.new(255/255,195/255,170/255)
+    local shaftweld=Instance.new("Weld")
+    shaftweld.Part0=x
+    shaftweld.Part1=shaft
+    if x.Name=="Handle"then
+        shaftweld.C0=CFrame.Angles(math.rad(90),math.rad(90),0)*CFrame.new(1,0,0)*
+        CFrame.Angles(math.rad(90),0,0)
+    else
+        shaftweld.C0=CFrame.Angles(0,math.rad(90),0)*CFrame.new(1,0,0)*
+        CFrame.Angles(math.rad(90),0,0)
+    end
+    shaftweld.Parent=shaft
+    local ball1=Instance.new("Part")
+    ball1.Shape=Enum.PartType.Ball
+    ball1.CanCollide=false
+    ball1.Parent=shaft
+    ball1.Size=Vector3.new(shaft.Size.Y+.25,shaft.Size.Y+.25,shaft.Size.Y+.25)
+    ball1.Material="SmoothPlastic"
+    ball1.Color=shaft.Color
+    local ball1weld=Instance.new("Weld")
+    ball1weld.Part0=ball1
+    ball1weld.Part1=shaft
+    ball1weld.C0=CFrame.new(shaft.Size.X/2,0,.25)
+    ball1weld.Parent=shaft
+    local ball2=Instance.new("Part")
+    ball2.Shape=Enum.PartType.Ball
+    ball2.CanCollide=false
+    ball2.Parent=shaft
+    ball2.Size=Vector3.new(shaft.Size.Y+.25,shaft.Size.Y+.25,shaft.Size.Y+.25)
+    ball2.Material="SmoothPlastic"
+    ball2.Color=shaft.Color
+    local ball2weld=Instance.new("Weld")
+    ball2weld.Part0=ball2
+    ball2weld.Part1=shaft
+    ball2weld.C0=CFrame.new(shaft.Size.X/2,0,-.25)
+    ball2weld.Parent=shaft
+    local tip=Instance.new("Part")
+    tip.Shape=Enum.PartType.Ball
+    tip.CanCollide=false
+    tip.Parent=shaft
+    tip.Size=Vector3.new(shaft.Size.Y+.1,shaft.Size.Y+.1,shaft.Size.Y+.1)
+    tip.Material="SmoothPlastic"
+    tip.Color=Color3.new(220/255,100/255,170/255)
+    local tipweld=Instance.new("Weld")
+    tipweld.Part0=tip
+    tipweld.Part1=shaft
+    tipweld.C0=CFrame.new(-shaft.Size.X/2,0,0)
+    tipweld.Parent=shaft
+end
+local IsPartOfDescendant=function(part,ancestor)
+    local current=part
+    repeat current=current.Parent until current==ancestor or not current
+    return current==ancestor
+end
+game.RunService.RenderStepped:Connect(function()
+    if game.Workspace.CurrentCamera:FindFirstChild("Main")then
+        local part=game.Workspace.CurrentCamera.Main:FindFirstChild("Handle")or game.Workspace.CurrentCamera.Main:FindFirstChild("Trigger")
+        if not part:FindFirstChild("McShafty")then
+            summondecock(part)
+        end
+        for _,v in pairs(game.Workspace.CurrentCamera.Main:GetDescendants())do
+            if v:IsA("BasePart")and not IsPartOfDescendant(v,part)then
+                v.Transparency=1
+            elseif v:IsA("Texture")then
+                v:Destroy()
+            end
+        end
+    end
+    for _,v in pairs(game.Workspace.Ignore.Misc:GetChildren())do
+        if v.Name=="Hole"then
+            v.Transparency=0
+            v.Material="SmoothPlastic"
+            v.Color=Color3.new(1,1,1)
+            v.Size=Vector3.new(.5,.5,.5)
+            v.Shape="Ball"
+            for _,c in pairs(v:GetChildren())do
+                if c:IsA("Decal")then
+                    c.Texture=""
+                end
+            end
+        end
+    end
+    for _,v in pairs(game.Workspace.Terrain:GetChildren())do
+        if v:IsA("Beam")then
+            v.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,0),NumberSequenceKeypoint.new(1, 0)}
+            v.Color=ColorSequence.new(Color3.new(1,1,1))
+        end
+    end
+    for _,a in pairs(GetEnemys()[1])do
+        for _,c in pairs(a:GetChildren())do
+            if c.Name=="Torso"then
+                c.Size=Vector3.new(1,3,1)
+                c.Color=Color3.new(255/255,195/255,170/255)
+                c.Transparency=1
+                local b=Instance.new("Part")
+                b.Parent=game.Workspace.Ignore
+                b.CanCollide=false
+                b.Anchored=true
+                b.CFrame=c.CFrame*CFrame.Angles(0,0,math.rad(90))
+                b.Color=c.Color
+                b.Shape="Cylinder"
+                b.Size=Vector3.new(3,1,1)
+                b.Material="SmoothPlastic"
+                coroutine.wrap(function()
+                    game.RunService.RenderStepped:Wait()
+                    b:Destroy()
+                end)()
+            end
+            if c.Name=="Head"then
+                c.Size=Vector3.new(1.5,1.5,1.5)
+                c.Color=Color3.new(220/255,100/255,170/255)
+                c.Shape="Ball"
+            end
+            if c.Name=="Left Arm"or c.Name=="Right Arm"then
+                c.Size=Vector3.new()
+                c.Transparency=1
+            end
+            if c.Name=="Left Leg"or c.Name=="Right Leg"then
+                c.Shape="Ball"
+                c.Size= Vector3.new(2,2,2)
+                c.Color=Color3.new(255/255,195/255,170/255)
+            end
+            for _,d in pairs(c:GetChildren())do
+                if d.Name~="Motor6D"and d.Name~="Neck"then
+                    d:Destroy()
+                end
+            end
+        end
+    end
+end)
+game:GetService("StarterGui"):SetCore("SendNotification",{Title="Made By: vesper#0655",Text="AKA best scripter",Duration=99999})
