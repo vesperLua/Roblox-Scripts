@@ -1,0 +1,25 @@
+getgenv().farming = false
+wait(2)
+getgenv().farming = true -- rerun script with this commented out to stop
+
+game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.processGameItemSold:InvokeServer("SellEverything")
+
+while getgenv().farming do
+    splitCapacity = game:GetService("Players").LocalPlayer.PlayerGui.Interface.Inventory.QuickAccess.BackpackToggle.InventoryCapacity.Text:split("/")
+    capacityFraction = tonumber(splitCapacity[1]/splitCapacity[2])
+    
+    while capacityFraction ~= 1 and getgenv().farming do
+        coroutine.wrap(function()
+            game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.FishBiting:InvokeServer()
+        end)()
+            
+        task.wait(0.1)
+            
+        game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.FishCaught:FireServer()
+        
+        splitCapacity = game:GetService("Players").LocalPlayer.PlayerGui.Interface.Inventory.QuickAccess.BackpackToggle.InventoryCapacity.Text:split("/")
+        capacityFraction = tonumber(splitCapacity[1]/splitCapacity[2])
+    end
+    
+    game:GetService("ReplicatedStorage").CloudFrameShared.DataStreams.processGameItemSold:InvokeServer("SellEverything")
+end
