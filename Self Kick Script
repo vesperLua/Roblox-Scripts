@@ -1,0 +1,3 @@
+-- If you don't want dudes cheating and want to make a fake script that kicks them
+
+game:GetService("Players").LocalPlayer:Kick("Why you cheating?")
