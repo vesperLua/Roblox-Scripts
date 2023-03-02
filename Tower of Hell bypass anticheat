@@ -1,0 +1,6 @@
+local env = getsenv(game:GetService("Players").LocalPlayer.PlayerScripts.LocalScript)
+local func = env.kick
+
+local Hook = hookfunction(func, function(...)
+    return wait(math.huge)
+end)
