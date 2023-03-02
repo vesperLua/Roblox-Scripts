@@ -1,0 +1,71 @@
+-- UI
+
+local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
+
+local Window = Rayfield:CreateWindow({
+    Name = "Frontline Hub",
+    LoadingTitle = "Welcome",
+    LoadingSubtitle = "by vesper",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = nil, -- Create a custom folder for your hub/game
+        FileName = "Scorch Hub"
+    },
+        Discord = {
+            Enabled = false,
+            Invite = "laskdnjaslkdjalskdjalfknoiwueh", -- The Discord invite code, do not include discord.gg/
+            RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+        },
+    KeySystem = false, -- Set this to true to use our key system
+    KeySettings = {
+        Title = "Frontlines",
+        Subtitle = "Key System",
+        Note = "Join the discord (discorddfsfsdsdf"
+        SaveKey = true,
+        GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+        Key = "SunflowerGalaxy"
+    }
+})
+
+local Tab = Window:CreateTab("Main")
+local Section = Tab:CreateSection("Main")
+
+local Slider = Tab:CreateSlider({
+    Name = "Speed Hack",
+    Range = {0, 10},
+    Increment = 0.5,
+    Suffix = "Speed Hack",
+    CurrentValue = 2,
+    Callback = function(Value)
+        local speedMultiplier = 1.5
+
+        for _,v in pairs(getgc(true)) do
+            if typeof(v) == "table" then
+                if rawget(v, "movement") then 
+                    v.movement = speedMultiplier
+                end
+            end
+        end
+    end
+}) 
+
+local Slider = Tab:CreateSlider({
+    Name = "Hitbox Extender",
+    Range = {0, 10},
+    Increment = 0.5,
+    Suffix = "Size",
+    CurrentValue = 2,
+    Callback = function(Value)
+        local HitboxSize = Vector3.new(Value, Value, Value)
+
+        if getgenv().c then getgenv().c:Disconnect() end
+        getgenv().c = game:GetService("RunService").RenderStepped:Connect(function()
+            for _,v in pairs(workspace:GetChildren()) do
+               if v:IsA("BasePart") and v.Color == Color3.new(1,0,0) then
+                  v.Transparency = 1.0
+                  v.Size = HitboxSize
+               end
+            end    
+        end)
+    end
+})
